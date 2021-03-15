@@ -1,8 +1,8 @@
 <?php 		
 	
-	function getDistinctNames($conn){
-		$query = "select Name from zoomuser";
-
+	function getDistinctNames($conn, $courseID){
+		$query = "select distinct(Name) from zoomuser inner join attendancedetail on zoomuser.email = attendancedetail.Email where attendancedetail.CourseID = '{$courseID}'";
+		
 		$result = mysqli_query($conn, $query);
 
 		$name_list = mysqli_fetch_all($result, MYSQLI_NUM);
@@ -19,8 +19,9 @@
 		return $names;
 	}
 
-	function getDistinctDates($conn){
-		$query = "select distinct date(JoinTime) from attendancedetail";
+	function getDistinctDates($conn, $courseID){
+		$query = "select distinct date(JoinTime) from attendancedetail where courseID = '{$courseID}'";
+	
 
 		$result = mysqli_query($conn, $query);
 
@@ -43,6 +44,7 @@
 		$rows = [];
 
 		$query = "select * from attendance_info";
+		
 
 		$result = mysqli_query($conn, $query);
 
@@ -64,4 +66,22 @@
 		return $rows;
 	}
 	
+	function getCourseIDs($conn){
+		$courses = [];
+
+		$query = "select CourseID from courseinfo";
+
+		$result = mysqli_query($conn, $query);
+
+		$course_info = mysqli_fetch_all($result, MYSQLI_NUM);		
+
+		foreach($course_info as $courseID){
+			$courses[] = $courseID[0];
+		}
+
+		mysqli_free_result($result);
+
+		mysqli_close($conn);
+		return $courses;
+	}
 ?>
